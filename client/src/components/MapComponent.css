@@ -13,19 +13,24 @@
   }
 
   h2 {
-    font-size: 1rem; /* Use rem for scaling */
+    font-size: 0.8rem; /* Use rem for scaling */
+    font-family: 'Calibri';
+    padding: 0rem;
+    text-align: center;
+    margin-top: 0rem;
+    margin: 0rem;
+  }
+
+  h2 .timeline {
+    font-size: 0.3rem; /* Use rem for scaling */
     font-family: 'Calibri';
     padding: 0rem;
     text-align: center;
     margin-top: 0rem;
   }
 
-  h2 .timeline {
-    font-size: 0.5rem; /* Use rem for scaling */
-    font-family: 'Calibri';
-    padding: 0rem;
+  h3 {
     text-align: center;
-    margin-top: 0rem;
   }
 
   h4 {
@@ -46,17 +51,27 @@
   /* General Legend Container */
   .layer-controls-container {
     position: fixed;
-    padding: 1.5rem;
+    padding: 0.5rem 2rem;
     border: 0px solid #ccc;
     border-radius: 0rem;
     background-color: #ffffff;
     z-index: 1001; /* Higher than sidebar */
-    width: 100%;
-    max-width: 100%;
+    width: 80%;
+    max-width: 80%;
     max-height: 20%;
     bottom: 0px; /* Ensure it's visible */
-    left: 0px; /* Adjust to top-left for visibility */
+    left: 21%; /* Adjust to top-left for visibility */
     transform: none; /* Remove centering */
+  }
+
+  .layer-controls-row {
+    font-size: 12px;
+    padding: 0rem 0.5rem 0.5rem 0rem;
+  }
+
+  .layer-controls-row h2 {
+    font-size: 14px;
+    padding: 0rem 0rem 0rem 0rem;
   }
 
   .layer-controls-row1 {
@@ -82,11 +97,11 @@
   }
 
   /* Sidebar Styling */
-  .sidebar {
+  .desktop-sidebar {
     position: absolute;
     top: 0%;
-    width: 20%;
-    max-width: 20%;
+    width: 12rem;
+    max-width: 12rem;
     bottom: 0rem;
     right: 0rem;
     max-height: 100%;
@@ -99,68 +114,102 @@
   }
 
   /* Sidebar Header */
-  .sidebar h3 {
+  .desktop-sidebar h3 {
     font-size: 1.2rem;
     margin: 10px 0 10px 0;
   }
 
-  .sidebar h2 
+  .desktop-sidebar h2 
   {
     font-size: 1rem;
     margin: 10px 0 10px 0;
   }
 
-  .sidebar p {
+  .desktop-sidebar p {
     font-size: 0.8rem;
     margin: 10px 0 10px 0;
   }
 
-  .legend-box {
-    display: flex;
-    position: fixed;
-    flex-direction: column; /* Align items vertically */
-    align-items: flex-start; /* Align to the left */
-    margin-bottom: 0.5rem;
-    font-size: 0.8rem;
-    width: 18%;
-    max-width:18%;
-    margin-top:9rem;
-    z-index: 10001;
-    background: #ffffff;
-    padding: 10px; /* Optional: add some padding */
-  }
+  /* Legend Section */
+.legend-container {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20%;
+  max-width: 20%;
+  max-height: 100%;
+  z-index: 1001;
+  background-color: rgba(255, 255, 255, 1);
+}
 
+.centered-text {
+  text-align: center;
+}
 
-  /* Title Section */
-  .legend-header {
-    display:flex;
-    position:fixed;
-    flex-direction: column; /* Align items vertically */
-    align-items: center; /* Align to the left */
-    margin-bottom: 0.5rem;
-    top: 0;
-    padding: 10px;
-    border: 0px solid #ccc;
-    border-radius: 0rem;
-    background-color: rgba(255, 255, 255, 1);
-    z-index: 1001;
-    width: 18%;
-    max-width:18%;
-    transform: translateX(0%);
-    margin-top:0rem;
-  }
+.legend-items-container {
+  overflow-y: auto;
+  border: 0px solid #ccc; /* Optional: Add border for visual clarity */
+  padding-right: 10px; /* Adds space between text and scrollbar */
+  width: 95%;
+  max-width: 95%;
+}
 
-  /* Logo Section */
-  .legend-logo {
-    text-align: center;
-    margin-bottom: 0rem;
-  }
+/* For Webkit Browsers (Chrome, Safari) */
+.legend-items-container::-webkit-scrollbar {
+  width: 6px; /* Make scrollbar thinner */
+}
 
-  .legend-logo img {
-    width: 100%;
-    height: auto;
-  }
+.legend-items-container::-webkit-scrollbar-thumb {
+  background-color: #888; /* Scrollbar thumb color */
+  border-radius: 4px; /* Round edges */
+}
 
+.legend-items-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Darker color on hover */
+}
+
+.legend-items-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Scrollbar track color */
+}
+
+/* Title Section */
+.legend-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 1);
+  border-bottom: 1px solid #ccc; /* Optional: adds separation */
+}
+
+/* Logo Section */
+.legend-logo {
+  text-align: center;
+  margin-bottom: 0rem;
+}
+
+.legend-logo img {
+  width: 100%;
+  height: auto;
+}
+
+/* Legend Box */
+.legend-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  width: 100%;
+  background: #ffffff;
+  padding: 10px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+  
   /* Color Legend Items */
   .legend-items {
     margin-top: 1rem;
@@ -207,6 +256,7 @@
 
   .timeline-slider {
     width: 100%;
+    height: 10px;
     margin: 0;
     background: #cac9c9;
     appearance: none;
@@ -245,7 +295,7 @@
   }
 
   .tick:hover {
-    color: #9e2727;
+    color: #49b8b3;
   }
 
   .tick-label {
@@ -265,12 +315,14 @@
     justify-content: space-between; /* Space between Point A and Point B */
     position: relative;
     padding-top: 30px;
-    padding: 50px 90px; /* Add vertical padding to make room for labels */
+    padding: 2rem 4rem 3rem 4rem; /* Add vertical padding to make room for labels */
     margin: 10px 0; /* Increase margin to separate from subsequent text */
+    width: 70%; /* Ensure the width is always 80% of the container */
+    max-width: 70%; /* Prevent exceeding 80% */
 }
 
 .line {
-    flex-grow: 1;
+    flex-grow: 2;
     height: 4px; /* Thickness of the line */
     background-color: black;
     position: relative;
@@ -307,16 +359,16 @@
   .point-label.above {
     position: absolute;
     top: -30px; /* Adjust as needed */
-    text-align: center;
-    font-size: 14px;
+    text-align: left;
+    font-size: 12px;
     white-space: nowrap;
   }
 
   .point-label.below {
     position: absolute;
     top: 30px; /* Adjust as needed */
-    text-align: center;
-    font-size: 14px;
+    text-align: left;
+    font-size: 12px;
     white-space: nowrap;
   }
 
@@ -329,6 +381,7 @@
     border: 1px solid #ccc;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    bottom: 1rem;
   }
 
   .show-all-button.active {
@@ -342,7 +395,7 @@
 
   .button-link {
     margin-top: 10px;
-    padding: 0px 2px;
+    padding: 5px 5px;
     background-color: #186ea800;
     color: #1c5174;
     border: none;
@@ -352,37 +405,89 @@
 
   .button-link:hover {
     background-color: #2ea5c9;
+    color: #ffffff;
   }
 
+/* Default marker style */
+.default-marker .marker-icon {
+  background-color: #50c878; /* Green */
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+}
 
-  @media only screen and (max-width: 768px) {
+/* Pulsing animation for the marker */
+.pulsing-marker .marker-icon {
+  background-color: #50c878; /* Green */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: pulse 1.5s infinite;
+}
 
-    /* Title Section */
-  .legend-header {
-    display:flex;
-    position:fixed;
-    flex-direction: column; /* Align items vertically */
-    align-items: center; /* Align to the left */
-    margin-bottom: 0.5rem;
-    top: 0;
-    padding: 10px;
-    border: 0px solid #ccc;
-    border-radius: 0rem;
-    background-color: rgba(255, 255, 255, 1);
-    z-index: 1001;
-    width: 100%;
-    max-width:100%;
-    transform: translateX(0%);
-    margin-top:0rem;
+/* Pulsing effect keyframes */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
   }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+@media only screen and (max-width: 768px) and (orientation: portrait) {
+  
+  .custom-cursor {
+    display:none !important;
+  }
+
+  .leaflet-container {
+      height: 100%;
+      top: 38%;
+      max-height: 52%;
+      font-size: 0.5rem;
+    }
+    /* Legend Section */
+    .legend-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%; /* Make it wider on small screens */
+      max-width: 100%;
+      height: 28%;
+      max-height: 28%;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent */
+    }
+  
+    .legend-header {
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0.5rem 0rem;
+    }
+  
+    .legend-box {
+      font-size: 0.8rem;
+      padding: 8px;
+      /* max-height: 200px; Prevents too much vertical space */
+      overflow-y: auto; /* Scroll if content overflows */
+    }
 
     /* Logo Section */
     .legend-logo {
       text-align: center;
       align-items: center;
       margin-bottom: 0rem;
-      max-height:10%;
-      height: 3rem;
+      max-height:80%;
+      height: 80%;
       max-width: 100%;
     }
 
@@ -404,10 +509,11 @@
 
     h2 {
       font-size: 0.7rem; /* Use rem for scaling */
-      font-family: 'Calibri';
+      font-family: 'Calibri';   
       padding: 0rem;
       text-align: center;
       margin-top: 0rem;
+      margin: 0rem;
     }
 
     h4 {
@@ -418,19 +524,9 @@
       margin-bottom: 0rem;
     }
 
-    .legend-box {
-      display: flex;
-      position: fixed;
-      flex-direction: column; /* Align items vertically */
-      align-items: left; /* Align to the center */
-      margin-bottom: 0.5rem;
-      font-size: 0.8rem;
-      width:100%;
-      max-width:100%;
-      margin-top:5.5rem;
-      z-index: 10001;
-      background: #ffffff;
-      padding: 10px; /* Optional: add some padding */
+    h4.timelineTitle {
+      text-align: center;
+      width: 100%;
     }
 
     .legend-items {
@@ -458,95 +554,297 @@
       left: 0%;
       padding: 0.5rem;
       margin-bottom: 1rem;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      font-family: 'Calibri';
       border: 1px solid #ccc;
       border-radius: 4px;
       background-color: #fff;
-      cursor: pointer;
+      cursor: none;
     }
 
     .legend-item {
       display: none; /* Hide legend items on mobile */
+      cursor: none;
     }
     
     .show-all-button {
       margin-left: 10px; /* Spacing between dropdown and button */
       font-size: 0.9rem;
+      font-family: 'Calibri';
       padding: 5px 10px;
       background-color: #1c5174;
       border: 1px solid #ccc;
-      cursor: pointer;
+      cursor: none;
       transition: background-color 0.2s ease;
       white-space: nowrap; /* Prevent button text from wrapping */
     }
 
-    /* Sidebar Styling */
-    .mobile-sidebar {
-      display:flex;
+    /* Timeline Slider */
+    .slider-wrapper {
+      position: relative;
+      width: 100%;
+      height: 50px;
+    }
+
+    .timeline-slider {
+      width: 100%;
+      margin: 0;
+      background: #cac9c9;
+      appearance: none;
+    }
+
+    .timeline-slider::-webkit-slider-thumb {
+      appearance: none;
+      height: 15px;
+      width: 15px;
+      border-radius: 50%;
+      background: #1c5174;
+      cursor: none;
+    }
+
+    .timeline-slider::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #000000;
+      cursor: none;
+    }
+
+    .tick-marks {
+      position: absolute;
+      top: 1.5rem;
+      width: 100%;
+      height: 1rem;
+      color: #000000;
+    }
+
+    .tick {
+      position: absolute;
+      top: 0;
+      text-align: center;
+      transform: translateX(-50%);
+      transform: rotate(-45deg);
+
+    }
+
+    .tick:hover {
+      color: #49b8b3;
+    }
+
+    .tick-label {
+      font-size: 10px;
+      margin-top: 5px;
+      transform: rotate(45deg); /* Rotate text 45 degrees */
+      transform-origin: left bottom; /* Adjust origin for better alignment */
+      white-space: normal; /* Prevent text from wrapping */
+      word-break: break-word; /* Break words if necessary */
+      line-height: 1.2; /* Adjust line spacing for readability */
+    }
+
+    .tick.active .tick-label {
+      color: #000000;
+      font-weight: bold;
+    }
+
+    /* General Legend Container */
+    .layer-controls-container {
       position: fixed;
-      flex-direction: column; /* Align items vertically */
-      align-items: flex-start; /* Align to the left */
-      margin-top:0rem;
-      margin-bottom: 0rem;
-      top: 62%;
-      left:0%;
       width: 100%;
       max-width: 100%;
-      max-height: 30%;
-      background-color: #d0d0d0;
-      padding: 0rem 0.5rem;
-      z-index: 2000;
-      overflow-y: auto;
+      top: calc(28% + 0px); /* Places it right after .legend-container */
+      left: 0%;
+      max-height: 10%;
+      background-color: #ffffff;
+      padding: 0rem 0.5rem 0rem 0.5rem;
+      margin: 0rem;
       border: 0px solid #ccc;
       border-radius: 0rem;
+      z-index: 1001;
+    }
+
+    .layer-controls-row {
+      align-items: center;
+    }
+
+    .layer-controls-row h2 {
+      font-size: 14px;
+      font-family: 'Calibri';
+      padding: 0rem 0rem 0rem 0rem;
+    }
+
+    .layer-controls-row h3 {
+      font-size: 12px;
+      font-family: 'Calibri';
+      align-items: center;
+      gap: 0.5rem; /* Adds some spacing between text and checkbox */
+      margin: 0.5rem 0rem;
+      padding: 0rem 0rem 0rem 0rem;
+    }
+
+    .layer-controls-row1 {
+      display: flex;
+      width: 100%;
+      height: 5%; /* 10% of the screen height */
+      max-height: 10%; /* Ensure it does not exceed the specified height */
+      box-sizing: border-box; /* Includes padding and border in the height calculation */
+    }
+
+    .layer-controls-row1-col1 {
+      flex: 0 0 15%; /* Fixed width of 15% of the row */
+      max-width: 15%;
+      height: 100%;
+      background-color: #e0e0e000;
+    }
+
+    .layer-controls-row1-col2 {
+      flex: 0 0 80%;
+      max-width: 80%;
+      height: 100%;
+      background-color: #e0e0e000;
+    }
+
+    .timeline-arrows {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      position: relative;
+    }
+
+    .arrow-button {
+      background-color: #1c5174;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 50%;
+      font-size: 1rem;
+      width: 30px;
+      height: 30px;
+      cursor: none;
+      position: absolute;
+    }
+
+    .arrow-button.left {
+      left: 0;
+    }
+
+    .arrow-button.right {
+      right: 0;
+    }
+
+    .arrow-button:disabled {
+      visibility: hidden;
+    }
+
+    .timeline-text {
+      font-size: 12px;
+      font-weight: regular;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Sidebar Styling */
+    .mobile-sidebar {
+      display: flex;
+      position: fixed;
+      flex-direction: column;
+      align-items: flex-start;
+      bottom: 0%;
+      left: 0%;
+      width: 100%;
+      max-width: 100%;
+      max-height: 50%; /* Prevent excessive height */
+      background-color: #ffffff;
+      padding: 0rem 0.5rem;
+      z-index: 2000;
+      overflow-y: auto; /* Enable scrolling when needed */
+      border: 0px solid #ccc;
+      border-radius: 0rem;
+      overflow-y: auto; /* Enable scrolling */
+      font-family: 'Calibri';
+      transition: max-height 0.3s ease-in-out;
+      cursor: none;
+      box-shadow: 0px -10px 10px -5px rgba(0, 0, 0, 0.3); /* Top drop shadow */
     }
 
     /* Sidebar Header */
     .mobile-sidebar h2 
     {
-      font-size: 0.8rem;
-      text-align:left;
-      margin: 0px 0 0px 0;
+      font-size: 0.6rem;
+      text-align:center;
+      margin: 0px 0px 0px 0px;
+      width: 100%;
+      max-width: 100%;
     }
 
     .mobile-sidebar h3 {
       font-size: 1rem;
-      margin: 10px 0 0px 0;
-      max-width:100%;
+      margin: 0.2rem 0 0 0;
+      width: 100%;
+      max-width: 100%;
     }
 
     .mobile-sidebar p {
+      display: inline-block;
       font-size: 0.6rem;
       text-align:left;
-      margin: 0px 0 0px 0;
+      margin: 0rem;
+      width: 95%;
+      max-width: 95%;
+      margin: 0rem 0rem 0.2rem 0rem;
+      padding: 0rem 0rem 0rem 0rem;
+      white-space: nowrap;
+      margin-right: 4px; /* Adds a small space between label and content */
     };
 
+    .mobile-sidebar.collapsed {
+      overflow: hidden;
+      height: 10%;  
+      max-height: 10%;
+      transition: max-height 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Apply transition to max-height and box-shadow */
+      box-shadow: 0px -5px 10px -5px rgba(0, 0, 0, 0.3); /* Adjusted drop shadow for collapsed state */
+  
+    }
+
+    .other-info {
+      display: flex;
+      flex-wrap: wrap;
+    }
+      
+    .other-info strong {
+      white-space: nowrap; /* Keeps "Other Info:" in one line */
+      margin-right: 4px;   /* Small gap between label and content */
+    }
+    
+    .other-info span {
+      flex: 1; /* Allows text to wrap naturally */
+    }
 
     /* Sidebar Line Segment Styling */
-    .line-segment {
+    div.line-segment.mobile-line-segment {
       display: flex;
       align-items: center; /* Align the points (circles) to the line */
       justify-content: space-between; /* Space between Point A and Point B */
+      width: 50%;
+      max-width: 50%;
       position: relative;
-      padding-top: 10px;
-      padding: 40px 50px; /* Add vertical padding to make room for labels */
-      margin: 0px 0; /* Increase margin to separate from subsequent text */
+      padding: 2rem 0rem 2rem 0rem !important; /* Ensure it overrides desktop */
+      margin: 0rem 0rem 0rem 5rem !important /* Increase margin to separate from subsequent text */
     }
-    
+      
     .line {
       flex-grow: 1; /* Fills space between Point A and Point B */
       height: 2px;
       background-color: #000;
       margin: 0 10px;
     }
-    
+      
     .point {
       position: relative; /* Labels are positioned relative to this */
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    
+      
     .point-circle {
       width: 12px;
       height: 12px;
@@ -568,26 +866,182 @@
       font-size: 0.6rem;
       white-space: nowrap;
     }
-    
+      
     .point-label.below {
       position: absolute;
-      top: 30px; /* Adjust as needed */
+      top: 20px; /* Adjust as needed */
       text-align: center;
       font-size: 0.6rem;
       white-space: nowrap;
     }
-    
+      
     .button-link {
       margin-top: 0px;
       padding: 0px 0px;
       background-color: #186ea800;
       color: #1c5174;
       border: none;
-      cursor: pointer;
+      cursor: none;
       font-size: 0.7rem;
     }
 
-    /* Timeline Slider */
+    .hide-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #1c5174;
+      border: none;
+      padding: 5px 10px;
+      cursor: none;
+      font-size: 0.9rem;
+    }
+    
+    .hide-button.disabled {
+      background: #ccc; /* Grey out the background */
+      color: #666; /* Optional: Change the text color */
+      cursor: not-allowed; /* Show "not allowed" cursor */
+      pointer-events: none; /* Disable interactions */
+    }
+
+    .centered-text {
+      text-align: center;
+      align-items: center;
+    }
+    
+  }
+
+  /* landscape mobile */
+  @media only screen and (max-width: 1024px) and (orientation: landscape) {
+
+    .custom-cursor {
+      display:none !important;
+    }
+
+    .leaflet-container {
+        height: 100%;
+        top: 0%;
+        max-height: 100%;
+      }
+      /* Legend Section */
+      .legend-container {
+        display: flex;
+        flex-direction: column;
+        width: 25%; /* Make it wider on small screens */
+        max-width: 25%;
+        height: 100%;
+        max-height: 100%;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent */
+      }
+    
+      .legend-box {
+        font-size: 0.8rem;
+        padding: 8px;
+        width: 90%;
+        /* max-height: 200px; Prevents too much vertical space */
+        overflow-y: auto; /* Scroll if content overflows */
+      }
+
+      
+      .legend-header {
+        flex-shrink: 0;
+        margin: 0;
+        padding: 0rem 0rem;
+      }
+  
+      .legend-logo {
+        text-align: center;
+        margin-bottom: 0rem;
+      }
+      
+      .legend-logo img {
+        align-items: center;
+        width: 100%;
+        max-width: 100%;
+        max-height:100%;
+      }
+        
+        /* Title */
+      h1 {
+        font-size: 1rem; /* Use rem for scaling */
+        font-family: 'futura-lt-w01-book', sans-serif;
+        padding: 0rem;
+        margin: 0;
+        text-align: center;
+      }
+  
+      h2 {
+        font-size: 0.7rem; /* Use rem for scaling */
+        font-family: 'Calibri';   
+        padding: 0rem;
+        text-align: center;
+        margin-top: 0rem;
+        margin: 0rem;
+      }
+
+      h4 {
+        font-size:0.7rem;
+        font-family: 'Calibri';
+        padding: 0rem;
+        margin-top: 0rem;
+        margin-bottom: 0rem;
+      }
+  
+      h4.timelineTitle {
+        text-align: center;
+        width: 100%;
+      }
+  
+      .legend-items {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 5px;
+          position: absolute;
+          bottom: 50px;
+          width: 100%;
+          padding: 10px;
+          box-sizing: border-box;
+      }
+  
+      /* Dropdown styles for mobile */
+      .legend-dropdown {
+        width: 70%;
+        left: 0%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.7rem;
+        font-family: 'Calibri';
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: none;
+      }
+  
+      .legend-item {
+        display: none; /* Hide legend items on mobile */
+        cursor: none;
+      }
+      
+      .show-all-button {
+        margin-left: 0.1rem; /* Spacing between dropdown and button */
+        margin-top: 0.1rem;
+        margin-bottom:1rem;
+        width:75%;
+        max-width: 75%;
+        font-size: 0.6rem;
+        font-family: 'Calibri';
+        padding: 0.8rem 0.4rem;
+        background-color: #1c5174;
+        border: 1px solid #ccc;
+        cursor: none;
+        transition: background-color 0.2s ease;
+        white-space: nowrap; /* Prevent button text from wrapping */
+      }
+  
+  /* Timeline Slider */
   .slider-wrapper {
     position: relative;
     width: 100%;
@@ -607,7 +1061,7 @@
     width: 15px;
     border-radius: 50%;
     background: #1c5174;
-    cursor: pointer;
+    cursor: none;
   }
 
   .timeline-slider::-moz-range-thumb {
@@ -615,7 +1069,7 @@
     width: 20px;
     border-radius: 50%;
     background: #000000;
-    cursor: pointer;
+    cursor: none;
   }
 
   .tick-marks {
@@ -636,7 +1090,7 @@
   }
 
   .tick:hover {
-    color: #9e2727;
+    color: #49b8b3;
   }
 
   .tick-label {
@@ -657,17 +1111,36 @@
   /* General Legend Container */
   .layer-controls-container {
     position: fixed;
-    padding: 1rem;
+    width: 22%;
+    max-width: 22%;
+    bottom: 10%; /* Places it right after .legend-container */
+    left: 0%;
+    max-height: 10%;
+    background-color: #ffffff;
+    padding: 0rem 0.5rem 0.5rem 0.5rem;
+    margin: 0rem;
     border: 0px solid #ccc;
     border-radius: 0rem;
-    background-color: #ffffff;
-    z-index: 1001; /* Higher than sidebar */
-    width: 90%;
-    max-width: 100%;
-    max-height: 30%;
-    bottom: 0px; /* Ensure it's visible */
-    left: 0px; /* Adjust to top-left for visibility */
-    transform: none; /* Remove centering */
+    z-index: 1001;
+  }
+
+  .layer-controls-row {
+    align-items: center;
+  }
+
+  .layer-controls-row h2 {
+    font-size: 14px;
+    font-family: 'Calibri';
+    padding: 0rem 0rem 0rem 0rem;
+  }
+
+  .layer-controls-row h3 {
+    font-size: 12px;
+    font-family: 'Calibri';
+    align-items: center;
+    gap: 0.5rem; /* Adds some spacing between text and checkbox */
+    margin: 0.5rem 0rem;
+    padding: 0rem 0rem 0rem 0rem;
   }
 
   .layer-controls-row1 {
@@ -691,6 +1164,7 @@
     height: 100%;
     background-color: #e0e0e000;
   }
+
   .timeline-arrows {
     display: flex;
     align-items: center;
@@ -702,9 +1176,12 @@
   .arrow-button {
     background-color: #1c5174;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 1rem;
+    width: 30px;
+    height: 30px;
+    cursor: none;
     position: absolute;
   }
 
@@ -716,13 +1193,805 @@
     right: 0;
   }
 
+  .arrow-button:disabled {
+    visibility: hidden;
+  }
+
   .timeline-text {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: regular;
     text-align: center;
     width: 100%;
   }
 
-  }
+  
+      /* Sidebar Styling */
+      .mobile-landscape-sidebar {
+        display: flex;
+        position: fixed;
+        flex-direction: column;
+        align-items: flex-start;
+        bottom: 0%;
+        right: 0%;
+        width: 25%;
+        max-width: 25%;
+        height: 100%; /* Allow expansion */
+        max-height: 100%; /* Prevent excessive height */
+        background-color: #ffffff;
+        padding: 0rem 0.5rem;
+        z-index: 2000;
+        overflow-y: auto; /* Enable scrolling when needed */
+        border: 0px solid #ccc;
+        border-radius: 0rem;
+        overflow-y: auto; /* Enable scrolling */
+        font-family: 'Calibri';
+        transition: width 0.3s ease-in-out, max-width 0.3s ease-in-out;
+        cursor: none;
+      }
+  
+      /* Sidebar Header */
+      .mobile-landscape-sidebar h2 
+      {
+        font-size: 0.8rem;
+        text-align:center;
+        margin: 0.5rem 0px 0px 0px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .mobile-landscape-sidebar h2.timeline
+      {
+        font-size: 0.7rem;
+        text-align:center;
+        margin: 0px 0px 0px 0px;
+        width: 100%;
+        max-width: 100%;
+      }
+  
+  
+      .mobile-landscape-sidebar h3 {
+        font-size: 1rem;
+        margin: 0.8rem 0 0rem 0;
+        width: 100%;
+        max-width: 100%;
+      }
+  
+      .mobile-landscape-sidebar p {
+        display: inline-block;
+        font-size: 0.7rem;
+        text-align:left;
+        margin: 0rem;
+        width: 95%;
+        max-width: 95%;
+        margin: 0rem 1rem 0.2rem 0rem;
+        padding: 0rem 0rem 0rem 0rem;
+        white-space: wrap;
+        margin-right: 4px; /* Adds a small space between label and content */
+      };
+  
+      .mobile-landscape-sidebar.collapsed {
+        max-width: 4%; /* Adjust to your preference */
+        overflow: hidden;
+        transition: transform 0.3s ease; /* for example, animating transform */
+      }
+      
+      .mobile-landscape-sidebar.collapsed h3,
+      .mobile-landscape-sidebar.collapsed p {
+        display: none; /* Hide text when collapsed */
+      }
+  
+      .other-info {
+        display: flex;
+        flex-wrap: wrap;
+      }
+        
+      .other-info strong {
+        white-space: nowrap; /* Keeps "Other Info:" in one line */
+        margin-right: 4px;   /* Small gap between label and content */
+      }
+      
+      .other-info span {
+        flex: 1; /* Allows text to wrap naturally */
+      }
+  
+      /* Sidebar Line Segment Styling */
+.mobile-landscape-line-segment {
+  display: flex;
+  flex-direction: column; /* Arrange elements vertically */
+  align-items: flex-start; /* Align all children (line and points) to the left */
+  padding: 0rem 0rem 0rem 0rem;
+  width: 100%;
+  max-width: 100%;
+  max-height: 50%;
+}
+
+.line-segment {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 0px 0;
+  padding: 1rem 0;
+}
+.line-segment-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  font-size: 0.7rem;
+}
+
+/* === TIMELINE COLUMN === */
+.line-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 50%;
+  padding: 0rem 0rem 0rem 0rem;
+  gap: 0rem; /* Space between points */
+}
+
+/* Timeline circles */
+.point-circle {
+  margin: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #000000;
+  position: relative;
+}
+
+/* Connecting Line */
+.timeline-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+}
+
+/* Connecting Line */
+.line {
+  width: 2px;
+  background-color: black;
+  height: 2rem; /* Tall enough to connect circles */
+  position: relative;
+}
+
+/* Adding an arrowhead at the bottom of the line */
+.line::after {
+  content: "";
+  position: absolute;
+  bottom: -6px; /* Position the arrow at the end of the line */
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid black; /* Arrow color */
+}
+
+/* === LABELS COLUMN === */
+.labels-column {
+  flex: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  padding-left: 0rem;
+  height: 100%;
+}
+
+.point-label-container:not(:last-child) {
+  text-align: left;
+  padding-bottom: 0rem; /* Adds spacing between events */
+  margin-bottom: 5rem; /* Adjust as needed */
+}
 
 
+.point-header {
+  font-size: 0.5rem;
+  font-weight: bold;
+}
+
+.point-label.above{
+  font-size: 0.5rem;
+  color: #333;
+}
+.point-label.below{
+  font-size: 0.5rem;
+  color: #333;
+}
+        
+      .button-link {
+        margin-top: 0px;
+        padding: 0px 0px;
+        background-color: #186ea800;
+        color: #1c5174;
+        border: none;
+        cursor: none;
+        font-size: 0.7rem;
+      }
+  
+      .hide-button {
+        position: absolute;
+        top: 10px;
+        left: 0px;
+        background: #1c5174;
+        border: none;
+        padding: 5px 10px;
+        margin-left: 0.5rem;
+        cursor: none;
+        font-size: 0.9rem;
+      }
+      
+      .hide-button.disabled {
+        background: #ccc; /* Grey out the background */
+        color: #666; /* Optional: Change the text color */
+        cursor: not-allowed; /* Show "not allowed" cursor */
+        pointer-events: none; /* Disable interactions */
+      }
+  
+      .centered-text {
+        text-align: center;
+      }
+
+      /* Apply only in landscape mode */
+      .mobile-landscape-line-segment {
+        display: flex;
+        flex-direction: column; /* Arrange elements vertically */
+        align-items: flex-start; /* Align all children (line and points) to the left */
+        padding: 0.5rem 0rem 0rem 0rem;
+        width: 100%;
+        max-width: 100%;
+      }
+      
+      .line {
+        width: 2px; /* Thin vertical line */
+        background-color: black;
+        height: 100px; /* Height of the vertical line */
+        margin-left: 0.6rem; /* Center the line with points */
+        margin-bottom: 0rem;
+        margin-top: 0 rem;
+      }
+      
+      .point {
+        display: flex;
+        flex-direction: row; /* Arrange circle and label horizontally */
+        align-items: center; /* Align circle and label vertically */
+        margin-bottom: 0rem; /* Add space between points */
+      }
+      
+      .point-label {
+        text-align: left;
+        margin-left: 2rem; /* Space between circle and label */
+      }
+      
+      .point-circle {
+        width: 10px;
+        height: 10px;
+        background-color: black;
+        border-radius: 50%;
+      }
+        }
+  
+  
+@media only screen and (min-width: 1025px) and (orientation: landscape) {
+/* Title */
+h1 {
+  font-size: 1.2rem; /* Use rem for scaling */
+  font-family: 'futura-lt-w01-book', sans-serif;
+  padding: 0rem;
+  margin: 0;
+  text-align: center;
+}
+
+h2 {
+  font-size: 0.8rem; /* Use rem for scaling */
+  font-family: 'Calibri';
+  padding: 0rem;
+  text-align: center;
+  margin-top: 0rem;
+  margin: 0rem;
+}
+
+h2 .timeline {
+  font-size: 0.3rem; /* Use rem for scaling */
+  font-family: 'Calibri';
+  padding: 0rem;
+  text-align: center;
+  margin-top: 0rem;
+}
+
+h3 {
+  text-align: center;
+}
+
+h4 {
+  font-size:0.9rem;
+  font-family: 'Calibri';
+  padding: 0rem;
+  margin-top: 0rem;
+  margin-bottom: 0.5rem;
+}
+
+.leaflet-container {
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+}
+
+/* General Legend Container */
+.layer-controls-container {
+  position: fixed;
+  padding: 0.5rem 2rem;
+  border: 0px solid #ccc;
+  border-radius: 0rem;
+  background-color: #ffffff;
+  z-index: 1001; /* Higher than sidebar */
+  width: 80%;
+  max-width: 80%;
+  max-height: 20%;
+  bottom: 0px; /* Ensure it's visible */
+  left: 21%; /* Adjust to top-left for visibility */
+  transform: none; /* Remove centering */
+}
+
+.layer-controls-row {
+  font-size: 12px;
+  padding: 0rem 0.5rem 0.5rem 0rem;
+}
+
+.layer-controls-row h2 {
+  font-size: 14px;
+  padding: 0rem 0rem 0rem 0rem;
+}
+
+.layer-controls-row1 {
+  display: flex;
+  width: 100%;
+  height: 5%; /* 10% of the screen height */
+  max-height: 10%; /* Ensure it does not exceed the specified height */
+  box-sizing: border-box; /* Includes padding and border in the height calculation */
+}
+
+.layer-controls-row1-col1 {
+  flex: 0 0 15%; /* Fixed width of 15% of the row */
+  max-width: 15%;
+  height: 100%;
+  background-color: #e0e0e000;
+}
+
+.layer-controls-row1-col2 {
+  flex: 0 0 80%;
+  max-width: 80%;
+  height: 100%;
+  background-color: #e0e0e000;
+}
+
+/* Sidebar Styling */
+.desktop-sidebar {
+  position: absolute;
+  top: 0%;
+  width: 20%;
+  max-width: 20%;
+  bottom: 0rem;
+  right: 0rem;
+  max-height: 100%;
+  background-color: #ffffff;
+  padding: 1rem;
+  z-index: 2000;
+  overflow-y: auto;
+  border: 0px solid #ccc;
+  border-radius: 0rem;
+  transition: width 0.3s ease-in-out;
+
+}
+
+/* Sidebar Header */
+.desktop-sidebar h3 {
+  font-size: 1rem;
+  margin: 10px 0 10px 0;
+}
+
+.desktop-sidebar h2 
+{
+  font-size: 0.9rem;
+  margin: 10px 0 10px 0;
+}
+
+.desktop-sidebar p {
+  font-size: 0.8rem;
+  margin: 10px 0 10px 0;
+  text-align: left;
+}
+
+.desktop-sidebar.collapsed {
+  width: 12rem; /* Adjust to your preference */
+  max-width: 12rem;
+  overflow: hidden;
+}
+
+/* Legend Section */
+.legend-container {
+display: flex;
+flex-direction: column; /* Stack elements vertically */
+position: fixed;
+top: 0;
+left: 0;
+width: 20%;
+max-width: 20%;
+height: 100%;
+max-height: 100%;
+z-index: 1001;
+background-color: rgba(255, 255, 255, 1);
+}
+
+.centered-text {
+  text-align: center;
+}
+
+.legend-items-container {
+overflow-y: auto;
+border: 0px solid #ccc; /* Optional: Add border for visual clarity */
+padding-right: 10px; /* Adds space between text and scrollbar */
+width: 95%;
+max-width: 95%;
+}
+
+/* For Webkit Browsers (Chrome, Safari) */
+.legend-items-container::-webkit-scrollbar {
+width: 6px; /* Make scrollbar thinner */
+}
+
+.legend-items-container::-webkit-scrollbar-thumb {
+background-color: #888; /* Scrollbar thumb color */
+border-radius: 4px; /* Round edges */
+}
+
+.legend-items-container::-webkit-scrollbar-thumb:hover {
+background-color: #555; /* Darker color on hover */
+}
+
+.legend-items-container::-webkit-scrollbar-track {
+background: #f1f1f1; /* Scrollbar track color */
+}
+
+/* Title Section */
+.legend-header {
+display: flex;
+flex-direction: column;
+align-items: center;
+width: 100%;
+padding: 10px;
+background-color: rgba(255, 255, 255, 1);
+border-bottom: 1px solid #ccc; /* Optional: adds separation */
+}
+
+/* Logo Section */
+.legend-logo {
+text-align: center;
+margin-bottom: 0rem;
+}
+
+.legend-logo img {
+width: 100%;
+height: auto;
+}
+
+/* Legend Box */
+.legend-box {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+font-size: 0.8rem;
+width: 100%;
+background: #ffffff;
+padding: 10px;
+overflow-y: auto;
+
+}
+
+
+/* Color Legend Items */
+.legend-items {
+  margin-top: 1rem;
+}
+
+.legend-items h4 {
+  margin-top: 0rem;
+  margin-bottom: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  text-align: left; /* Align text to the left */
+  z-index: 10001;
+  cursor: pointer;
+}
+
+.legend-color {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 1rem;
+  border-radius: 50%;
+  z-index: 10001;
+}
+
+.legend-item.hovered {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.legend-item.selected {
+  border: 2px solid #000;
+  background-color: rgba(202, 202, 202, 0.452);
+}
+
+/* Timeline Slider */
+.slider-wrapper {
+  position: relative;
+  width: 90%;
+  height: 50px;
+}
+
+.timeline-slider {
+  width: 100%;
+  height: 10px;
+  margin: 0;
+  background: #cac9c9;
+  appearance: none;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  background: #1c5174;
+  cursor: pointer;
+}
+
+.timeline-slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #000000;
+  cursor: pointer;
+}
+
+.tick-marks {
+  position: absolute;
+  top: 1.5rem;
+  width: 100%;
+  height: 1rem;
+  color: #000000;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.tick:hover {
+  color: #49b8b3;
+}
+
+.tick-label {
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+.tick.active .tick-label {
+  color: #000000;
+  font-weight: bold;
+}
+/* Sidebar Line Segment Styling */
+.landscape-line-segment {
+  display: flex;
+  flex-direction: column; /* Arrange elements vertically */
+  align-items: flex-start; /* Align all children (line and points) to the left */
+  padding: 0rem 0rem 0rem 0rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.line-segment {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 0px 0;
+  padding: 1rem 0;
+}
+.line-segment-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* === TIMELINE COLUMN === */
+.line-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0rem 0rem 0rem 0rem;
+  gap: 2rem; /* Space between points */
+}
+
+/* Timeline circles */
+.point-circle {
+  margin: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #000000;
+  position: relative;
+}
+
+/* Connecting Line */
+.timeline-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 5rem;
+}
+
+/* Connecting Line */
+.line {
+  width: 2px;
+  background-color: black;
+  height: 3rem; /* Tall enough to connect circles */
+  position: relative;
+}
+
+/* Adding an arrowhead at the bottom of the line */
+.line::after {
+  content: "";
+  position: absolute;
+  bottom: -6px; /* Position the arrow at the end of the line */
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid black; /* Arrow color */
+}
+
+/* === LABELS COLUMN === */
+.labels-column {
+  flex: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  padding-left: 1rem;
+}
+
+.point-label-container:not(:last-child) {
+  text-align: left;
+  padding-bottom: 1.5rem; /* Adds spacing between events */
+  margin-bottom: 1rem; /* Adjust as needed */
+}
+
+.point-header {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.point-label.above{
+  font-size: 0.9rem;
+  color: #333;
+}
+.point-label.below{
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.show-all-button.active {
+  background-color: #d1e7ff;
+  border: 1px solid #1c5174;
+}
+
+.show-all-button:hover {
+  background-color: #49b8b3;
+}
+
+.button-link {
+  margin-top: 10px;
+  padding: 5px 5px;
+  background-color: #186ea800;
+  color: #1c5174;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.button-link:hover {
+  background-color: #2ea5c9;
+  color: #ffffff;
+}
+
+/* Default marker style */
+.default-marker .marker-icon {
+background-color: #50c878; /* Green */
+border-radius: 50%;
+width: 25px;
+height: 25px;
+}
+
+/* Pulsing animation for the marker */
+.pulsing-marker .marker-icon {
+background-color: #50c878; /* Green */
+border-radius: 50%;
+width: 30px;
+height: 30px;
+animation: pulse 1.5s infinite;
+}
+
+/* Pulsing effect keyframes */
+@keyframes pulse {
+0% {
+  transform: scale(1);
+  opacity: 0.7;
+}
+50% {
+  transform: scale(1.2);
+  opacity: 1;
+}
+100% {
+  transform: scale(1);
+  opacity: 0.7;
+}
+}
+
+.hide-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #1c5174;
+  border: none;
+  padding: 5px 10px;
+  cursor: none;
+  font-size: 0.9rem;
+}
+
+.hide-button:hover {
+  background-color: #49b8b3;
+}
+
+.hide-button.disabled {
+  background: #ccc; /* Grey out the background */
+  color: #666; /* Optional: Change the text color */
+  cursor: not-allowed; /* Show "not allowed" cursor */
+  pointer-events: none; /* Disable interactions */
+}
+
+
+}
