@@ -1,7 +1,7 @@
 import React from "react";
 import "./MapComponent.css"; // Import the stylesheet
-import TimelineSlider from "./TimelineSlider.js";
-import ToggleLayerControl from "./ToggleLayerControl.js";
+import TimelineSlider from "./TimelineSlider.jsx";
+import ToggleLayerControl from "./ToggleLayerControl.jsx";
 
 const CustomLayersControl = ({
   onToggleBorders1880,
