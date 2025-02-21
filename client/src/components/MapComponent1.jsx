@@ -314,9 +314,18 @@ const MapComponent = () => {
   ////////////////////// Load data from CSV and GeoJSON files ///////////////////////
   
   useEffect(() => {
-    fetch('http://localhost:5000/download-csv')
-    .then((response) => response.text())
+     // Fetch CSV data with .then() chain
+    fetch('http://localhost:5000/download-csv', {
+      method: 'GET',
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch CSV");
+        }
+        return response.text(); // Read the CSV as text
+      })
       .then((data) => {
+        console.log("csv received successfully");
         const parsedData = d3.csvParse(data); // `d3.csvParse` converts CSV text to an array of objects
         const updatedData = parsedData.map((d) => ({
           ...d,
@@ -876,7 +885,7 @@ const MapComponent = () => {
         maxZoom={14} 
         minZoom={2} 
         zoomControl={false} 
-        style={{ height: '100vh' }} // Ensure height is set for the container
+        style={{ height: '100vh', width: '100vw' }} // Ensure full viewport coverage
         whenCreated={handleMapCreated} // Called when the map is created
         onZoom={handleZoomOrPan}
         onMoveEnd={handleZoomOrPan}
@@ -1033,13 +1042,13 @@ const MapComponent = () => {
         </MarkerClusterGroup>
 
         {/* Pass uniqueBirthDecades to TimelineSlider */}
-        <TimelineSlider
+        {/* <TimelineSlider
           birthDecades={uniqueBirthDecades}
           selectedDecade={selectedDecade} // Pass selectedDecade state to TimelineSlider
           onDecadeChange={handleDecadeChange} // Pass handleDecadeChange to handle the slider changes
           onCollapse={handleCollapse} // Pass handleCollapse to handle the collapse event
           isMigrationLinesVisible={isMigrationLinesVisible}
-        />
+        /> */}
 
         {/* Legend */}
         <Legend
