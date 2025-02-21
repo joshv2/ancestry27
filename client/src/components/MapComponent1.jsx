@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 import { MapContainer, TileLayer, GeoJSON, LayersControl, CircleMarker, Popup } from 'react-leaflet';
 import * as d3 from 'd3';
@@ -6,13 +7,31 @@ import * as wkt from 'wkt'; // Ensure you install a WKT parser library
 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import Sidebar from './Sidebar.jsx';
+import Sidebar from './Sidebar';
 import Legend from './Legend';
 import TimelineSlider from './TimelineSlider'; // Import TimelineSlider
 
 import CustomLayersControl from './CustomLayersControl';
 import MarkerList from './MarkerList';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
+
+// Loading Bar Component
+const LoadingBar = () => {
+  useEffect(() => {
+    // console.log("Loading animation mounted");
+  }, []);
+
+  return (
+    <dotlottie-player 
+      src="https://lottie.host/257b0ef4-0c67-4397-bb7f-1bd3d0ab805c/S34Mf5bs4f.lottie" 
+      background="transparent" 
+      speed="1" 
+      style={{width: "150px", height: "150px" }} 
+      loop 
+      autoplay
+    />
+  );
+};
 
 /////////////////// Create the color mapping ///////////////////////////////
 // Function to create a color mapping based on unique languages
@@ -57,21 +76,27 @@ const applyGradientToLine = (latlngs) => {
   }));
 };
 
-
-
+// Check if borders layer and data are available
 const BordersLayer = ({ isVisible, data, styleFunction }) => {
   return isVisible && data ? <GeoJSON data={data} style={styleFunction} /> : null;
 };
 
 //////////////////// Render Map Component //////////////////////////////////
 const MapComponent = () => {
+
   //////// Persist these items between map renders //////////////
   const mapRef = useRef(null);
   const cursorRef = useRef(null);
   const popupRef = useRef(null);
   const isMountedRef = useRef(true);
 
-  //state for geojson data
+  // Define initial center for mobile/desktop
+  const getInitialCenter = () =>
+    window.innerWidth < 768 ? [50, 0] : [29.4835096, 34.9270771];
+
+  const [mapCenter, setMapCenter] = useState(getInitialCenter);
+
+  // State for GeoJSON data
   const [geoData1850, setGeoData1850] = useState(null);
   const [geoData1880, setGeoData1880] = useState(null);
   const [geoData1900, setGeoData1900] = useState(null);
@@ -82,10 +107,9 @@ const MapComponent = () => {
   const [geoData1950, setGeoData1950] = useState(null);
   const [geoData1960, setGeoData1960] = useState(null);
   const [geoData1970, setGeoData1970] = useState(null);
-
   const [geoData1994, setGeoData1994] = useState(null); 
 
-  //state for visibility toggles
+  // State for visibility toggles
   const [isBordersVisible1850, setIsBordersVisible1850] = useState(false);
   const [isBordersVisible1880, setIsBordersVisible1880] = useState(false);
   const [isBordersVisible1900, setIsBordersVisible1900] = useState(false);
@@ -96,12 +120,10 @@ const MapComponent = () => {
   const [isBordersVisible1950, setIsBordersVisible1950] = useState(false);
   const [isBordersVisible1960, setIsBordersVisible1960] = useState(false);
   const [isBordersVisible1970, setIsBordersVisible1970] = useState(false);
-
-
   const [isBordersVisible1994, setIsBordersVisible1994] = useState(false);
 
   //////// Define the state variables ///////////////////////////
-  // const [filteredMarkers, setFilteredMarkers] = useState([]);
+
   const [selectedDecadeFilter, setSelectedDecadeFilter] = useState('All');  // Track the selected decade filter
   const [markerData, setMarkerData] = useState([]); // State to store marker data
   const [updatedFilteredMarkers, setUpdatedFilteredMarkers] = useState([]);
@@ -117,16 +139,18 @@ const MapComponent = () => {
   const [geoJsonKey, setGeoJsonKey] = useState(0);
 
   // Track layer variables
-  const [basemap, setBasemap] = useState('light'); // State to store the selected basemap
+  const [basemap,  setBasemap] = useState('light'); // State to store the selected basemap
   const [isMigrationLinesVisible, setIsMigrationLinesVisible] = useState(true); // State to store migration line visibility
   const handleBasemapChange = (value) => setBasemap(value); // Basemap style
   
- // Function to handle migration lines visibility toggle
-const handleToggleMigrationLines = () => {
-  setIsMigrationLinesVisible(prev => !prev); // Toggle visibility
-};
+  // Handle migration lines visibility toggle
+  const handleToggleMigrationLines = () => {
+    setIsMigrationLinesVisible(prev => !prev); // Toggle visibility
+  };
 
-  const [sidebarContent, setSidebarContent] = useState("Click on a point to show details"); // Sidebar content defaults
+  // Track sidebar content behavior and defaults
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [sidebarContent, setSidebarContent] = useState("Click on a point to show details"); 
   const [ancestryLinesLayer, setAncestryLinesLayer] = useState('');  
   
   const [selectedBirthDecades, setBirthDecades] = useState('');
@@ -139,7 +163,6 @@ const handleToggleMigrationLines = () => {
   const [updatedData, setUpdatedData] = useState([]);
   const [dataByDecade, setDataByDecade] = useState({});
 
-
   // Track selection variables
   const [selectedPoint, setSelectedPoint] = useState(null); // Track the selected point
   const [selectedNames, setSelectedNames] = useState([]); // State to track selected names
@@ -151,50 +174,53 @@ const handleToggleMigrationLines = () => {
 
    // Extract unique birthDecades from the updated data
    const uniqueBirthDecades = [...new Set(updatedData.map((marker) => marker.birthDecade))];
-   console.log("Unique Birth Decades:", uniqueBirthDecades);
+    //  console.log("Unique Birth Decades:", uniqueBirthDecades);
 
- 
    // Handle decade change to filter lines based on the selected decade
-const handleDecadeChange = (decade) => {
-  setSelectedDecade(decade);
-  console.log("Selected Decade:", decade);
-};
+  const handleDecadeChange = (decade) => {
+    setSelectedDecade(decade);
+    // console.log("Selected Decade:", decade);
+  };
 
-const refreshMigrationLines = () => {
-  // Un-toggle migration lines (set to false)
-  setIsMigrationLinesVisible(false);
+  const handleCollapse = useCallback(() => {
+    setIsCollapsed(true);
+    console.log("Collapsing sidebar...");
+  }, []);
 
-  // Force a brief delay and re-toggle the lines (set back to true)
-  setTimeout(() => {
-    setIsMigrationLinesVisible(true);
-  }, 100); // Small delay to ensure the layer is removed before being re-added
-};
+  const refreshMigrationLines = () => {
+    // Un-toggle migration lines (set to false)
+    setIsMigrationLinesVisible(false);
 
+    // Force a brief delay and re-toggle the lines (set back to true)
+    setTimeout(() => {
+      setIsMigrationLinesVisible(true);
+    }, 100); // Small delay to ensure the layer is removed before being re-added
+  };
 
-const handleLanguageSelect = (lang) => {
+  const handleLanguageSelect = (lang) => {
     setSelectedLanguage(lang); // Update selected language directly
-    console.log("Selected Language from Legend:", lang);
+    // console.log("Selected Language from Legend:", lang);
   
     // Filter markers and lines using both selected language and selected decade
     filterMarkers(selectedDecade, lang);
-};
+  };
 
-const resetLanguageFilter = () => {
+  const resetLanguageFilter = () => {
     setSelectedLanguage('All'); // Reset the language filter
-    console.log("reset language filter to all");
+    // console.log("reset language filter to all");
     filterMarkers(selectedDecade, 'All'); // Show all languages for the selected decade
     resetLanguageSelection(); // Reset the selected language in Legend
-};
+  };
 
-const resetLanguageSelection = () => {
+  const resetLanguageSelection = () => {
     setSelectedLanguage('All'); // Reset the selected language in Legend
-    console.log("Selected language has been reset"); // Confirm reset
-};
+    // console.log("Selected language has been reset"); // Confirm reset
+  };
 
-// This function filters markers and lines by both decade and language
-const filterMarkers = (decade, language) => {
-    console.log("Current Decade:", decade);
-    console.log("Current Language:", language);
+  // This function filters markers and lines by both decade and language
+  const filterMarkers = (decade, language) => {
+    // console.log("Current Decade:", decade);
+    // console.log("Current Language:", language);
 
     let updatedFilteredMarkers = markerData;
 
@@ -214,8 +240,8 @@ const filterMarkers = (decade, language) => {
 
     // Update the filtered markers state
     setFilteredMarkers(updatedFilteredMarkers);
-    console.log("Filtered Markers Count:", updatedFilteredMarkers.length);
-    console.log("Filtered Markers Data:", updatedFilteredMarkers);
+    // console.log("Filtered Markers Count:", updatedFilteredMarkers.length);
+    // console.log("Filtered Markers Data:", updatedFilteredMarkers);
 
     // Now filter migration lines by both selected decade & language
     const filteredLines = updatedFilteredMarkers
@@ -232,14 +258,74 @@ const filterMarkers = (decade, language) => {
     });
 
     setFilteredLines(filteredLines); // Make sure this state exists
-};
 
+  };
+
+  const handleMapCreated = (map) => {
+    // Set the initial center after map is created
+    map.setView(mapCenter);
+
+    // Optionally, if you want to change the center on resize
+    window.addEventListener("resize", () => {
+      map.setView(getInitialCenter());
+    });
+  };
+
+  // Update the map center
+  const updateMapCenter = (lat, lng) => {
+    const map = mapRef.current?.leafletElement;
+    if (map) {
+      map.setView([lat, lng], map.getZoom(), { animate: true }); // Smooth animation
+    }
+  };
+
+  // Update map center on window resize //
+  const updateCenter = () => {
+    const newCenter = getInitialCenter();
+    setMapCenter(newCenter);  // Update center state
+    // console.log("Updated map center:", newCenter);  // Log the updated center
+  };
+
+  useEffect(() => {
+    // Log the initial center value
+    // console.log("Initial map center:", mapCenter);
+
+    // Add event listener for window resize
+    window.addEventListener("resize", updateCenter);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", updateCenter);
+    };
+  }, []);  // Only runs on mount and unmount
+
+  useEffect(() => {
+    // Check if map instance is ready and update center
+    if (mapRef.current) {
+      mapRef.current.setView(mapCenter);
+    }
+  }, [mapCenter]); // Trigger effect whenever center changes
+
+  // Optionally log the current mapCenter whenever it changes
+  useEffect(() => {
+    // console.log("Map center updated:", mapCenter);
+  }, [mapCenter]);  // This will log every time mapCenter state changes
 
   ////////////////////// Load data from CSV and GeoJSON files ///////////////////////
+  
   useEffect(() => {
-    fetch('http://localhost:5000/download-csv')
-    .then((response) => response.text())
+     // Fetch CSV data with .then() chain
+    fetch('http://localhost:5000/download-csv', {
+      method: 'GET',
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch CSV");
+        }
+        return response.text(); // Read the CSV as text
+      })
       .then((data) => {
+        console.log("csv received successfully");
         const parsedData = d3.csvParse(data); // `d3.csvParse` converts CSV text to an array of objects
         const updatedData = parsedData.map((d) => ({
           ...d,
@@ -255,7 +341,7 @@ const filterMarkers = (decade, language) => {
         const uniqueLangs = [...new Set(updatedData.map((marker) => marker.lang2))];
         // Extract unique birthDecades
         const uniqueBirthDecades = [...new Set(updatedData.map((marker) => marker.birthDecade))];
-        console.log("Unique Birth Decades:", uniqueBirthDecades);
+        // console.log("Unique Birth Decades:", uniqueBirthDecades);
         setBirthDecades(uniqueBirthDecades); // store the unique birthDecade values
 
         // Get color mapping for languages
@@ -264,18 +350,16 @@ const filterMarkers = (decade, language) => {
         setMarkerData(updatedData);
         setUpdatedData(updatedData); // Update updatedData state
 
-        ///////////////////////////////////////////
         // Create an object where keys are decades, and values are filtered data
-      const dataByDecade = {};
-      uniqueBirthDecades.forEach((decade) => {
-        dataByDecade[decade] = updatedData.filter((d) => d.birthDecade === decade);
-      });
+        const dataByDecade = {};
+        uniqueBirthDecades.forEach((decade) => {
+          dataByDecade[decade] = updatedData.filter((d) => d.birthDecade === decade);
+        });
 
-      console.log("Data by Decade:", dataByDecade);
-      
-      // Store these subsets in state
-      setDataByDecade(dataByDecade);
-      /////////////////////////////
+        // console.log("Data by Decade:", dataByDecade);
+        refreshMigrationLines();
+        // Store these subsets in state
+        setDataByDecade(dataByDecade);
 
       })
       .catch((error) => console.error('Error loading CSV data:', error));
@@ -330,101 +414,83 @@ const filterMarkers = (decade, language) => {
 
       fetchGeoData();
 
-      // d3.json('/data/ancestry_12_2024_lines_break.geojson')
-      // .then((data) => {
-      //   setGeoJsonDataLines(data); // Store GeoJSON data for lines into state
-
-      //   // Add GeoJSON lines to the map
-      //   const ancestryLinesLayer = new L.GeoJSON(data, {
-      //     style: {styleFunctionLine},
-      //   }).addTo(mapRef.current);
-  
-      //   // Store the layer in a ref for later use
-      //   setAncestryLinesLayer(ancestryLinesLayer);
-
-      // })
-      // .catch((error) => console.error('Error loading GeoJSON lines:', error));
-        
-    // d3.json('/data/jlp_classroom1_lines.geojson')
-    //   .then((data) => setGeoJsonDataLines(data))
-    //   .catch((error) => console.error('Error loading GeoJSON lines:', error));
-
-  }, [mapRef]);
+    }, [mapRef]);
 
   ////////////////////////////// Marker behaviors /////////////////////////////////////////
+
   // Second useEffect: Filter markers based on selectedDecade
   useEffect(() => {
     filterMarkers(selectedDecade, selectedLanguage);
   }, [selectedDecade, selectedLanguage, markerData]);
 
-// useEffect to handle filtered markers and migration lines
-useEffect(() => {
-  if (!filteredMarkers || filteredMarkers.length === 0) {
-    console.warn("No filtered markers to render.");
-    return;
-  }
+  // useEffect to handle filtered markers and migration lines
+  useEffect(() => {
+    if (!filteredMarkers || filteredMarkers.length === 0) {
+      // console.warn("No filtered markers to render.");
+      return;
+    }
 
-  // Render log for filtered markers
-  console.log("Rendering filtered markers:", filteredMarkers);
+    // Render log for filtered markers
+    // console.log("Rendering filtered markers:", filteredMarkers);
   
-  // Ensure lines are updated after markers are filtered
-  const filteredLines = filteredMarkers
-    .filter((marker) => marker.greatCircleLine) // Ensure it has a valid line
-    .map((marker) => ({
-      ...marker,
-      greatCircleLine: marker.greatCircleLine,
-    }));
+    // Ensure lines are updated after markers are filtered
+    const filteredLines = filteredMarkers
+      .filter((marker) => marker.greatCircleLine) // Ensure it has a valid line
+      .map((marker) => ({
+        ...marker,
+        greatCircleLine: marker.greatCircleLine,
+      }));
 
-  // Set filtered lines state
-  setFilteredLines(filteredLines);
+    // Set filtered lines state
+    setFilteredLines(filteredLines);
 
-   // Update the key of the GeoJSON to force re-rendering
-   setGeoJsonKey((prevKey) => prevKey + 1); // Increment the key to trigger re-render
-  console.log("Rendering filtered migration lines:", filteredLines);
+    // Update the key of the GeoJSON to force re-rendering
+    setGeoJsonKey((prevKey) => prevKey + 1); // Increment the key to trigger re-render
+    // console.log("Rendering filtered migration lines:", filteredLines);
 
-  return () => {
-    // Cleanup logic here
-    console.log("Cleaning up marker and line rendering.");
-  };
-}, [filteredMarkers]);  // Trigger only when filteredMarkers changes
-
-
-// useEffect to handle rendering filtered migration lines
-useEffect(() => {
-  if (!filteredLines || filteredLines.length === 0) {
-    console.warn("No filtered migration lines to render.");
-    return;
-  }
-
-  // Log filtered migration lines
-  console.log("Rendering filtered migration lines:", filteredLines);
-
-  return () => {
-    // Cleanup logic here (if needed)
-    console.log("Cleaning up migration line rendering.");
-  };
-}, [filteredLines]);
+    return () => {
+      // Cleanup logic here
+      // console.log("Cleaning up marker and line rendering.");
+    };
+  }, [filteredMarkers]);  // Trigger only when filteredMarkers changes
 
 
-// UseEffect to update migration lines whenever filteredLines or visibility changes
-useEffect(() => {
-  if (isMigrationLinesVisible && filteredLines.length > 0) {
-    // Update GeoJSON layer with filtered lines when visibility is true
-    setGeoJsonDataLines({
-      type: "FeatureCollection",
-      features: filteredLines,
-    });
-    console.log("Migration Lines Updated:", filteredLines);
-  } else {
-    console.log("Migration Lines are hidden or no lines available.");
-  }
-}, [filteredLines, isMigrationLinesVisible]);
+  // useEffect to handle rendering filtered migration lines
+  useEffect(() => {
+    if (!filteredLines || filteredLines.length === 0) {
+      // console.warn("No filtered migration lines to render.");
+      return;
+    }
+
+    // Log filtered migration lines
+    // console.log("Rendering filtered migration lines:", filteredLines);
+
+    return () => {
+      // Cleanup logic here (if needed)
+      // console.log("Cleaning up migration line rendering.");
+    };
+
+  }, [filteredLines]);
+
+  // UseEffect to update migration lines whenever filteredLines or visibility changes
+  useEffect(() => {
+    if (isMigrationLinesVisible && filteredLines.length > 0) {
+      // Update GeoJSON layer with filtered lines when visibility is true
+      setGeoJsonDataLines({
+        type: "FeatureCollection",
+        features: filteredLines,
+      });
+      // console.log("Migration Lines Updated:", filteredLines);
+    } else {
+      // console.log("Migration Lines are hidden or no lines available.");
+    }
+  }, [filteredLines, isMigrationLinesVisible]);
 
 
-useEffect(() => {
-  // Call the refreshMigrationLines function when selectedDecade changes
-  refreshMigrationLines();
-}, [selectedDecade, selectedLanguage]); // This ensures the lines are refreshed when the decade changes
+  useEffect(() => {
+    // Call the refreshMigrationLines function when selectedDecade changes
+    refreshMigrationLines();
+  }, [selectedDecade, selectedLanguage]); // This ensures the lines are refreshed when the decade changes
 
   useEffect(() => {
     const borderVisibility = {
@@ -455,7 +521,6 @@ useEffect(() => {
       '1950': false,
       '1960': false,
       '1970': false,
-
       '1994': false,
     };
   
@@ -483,66 +548,63 @@ useEffect(() => {
   
   // Marker is hovered
   const onMarkerMouseOver = (e, marker) => {
-      setHoveredFeature(marker);
+    setHoveredFeature(marker);
 
-      // Update cursor position and style
-      const cursor = cursorRef.current;
+    // Update cursor position and style
+    const cursor = cursorRef.current;
+    if (cursor) {
+        // cursor.style.left = `${e.originalEvent.pageX}px`;
+        // cursor.style.top = `${e.originalEvent.pageY}px`;
+        cursor.style.width = '50px';
+        cursor.style.height = '50px';
+        cursor.classList.add('active', 'expanded');
+        // cursor.style.setProperty('--triangle-color', 'rgba(19, 233, 97, 0.8)'); // Green
+        // cursor.style.setProperty('--triangle-color', 'rgba(255, 255, 255, 0.8)'); // White
+        cursor.style.setProperty('--triangle-color', 'rgba(50, 205, 50, 0.8)'); // Dark Green
+    }
+
+    // Function to update the cursor position dynamically
+    const updateCursorPosition = (event) => {
       if (cursor) {
-          // cursor.style.left = `${e.originalEvent.pageX}px`;
-          // cursor.style.top = `${e.originalEvent.pageY}px`;
-          cursor.style.width = '50px';
-          cursor.style.height = '50px';
-          cursor.classList.add('active', 'expanded');
-          // cursor.style.setProperty('--triangle-color', 'rgba(19, 233, 97, 0.8)'); // Green
-          // cursor.style.setProperty('--triangle-color', 'rgba(255, 255, 255, 0.8)'); // White
-          cursor.style.setProperty('--triangle-color', 'rgba(50, 205, 50, 0.8)'); // Dark Green
-
-
+          cursor.style.left = `${event.originalEvent.pageX}px`;
+          cursor.style.top = `${event.originalEvent.pageY}px`;
       }
+    };
 
-      // Function to update the cursor position dynamically
-      const updateCursorPosition = (event) => {
-        if (cursor) {
-            cursor.style.left = `${event.originalEvent.pageX}px`;
-            cursor.style.top = `${event.originalEvent.pageY}px`;
-        }
-      };
+    // Attach mousemove event to update cursor position
+    e.target._map.on('mousemove', updateCursorPosition);
 
-      // Attach mousemove event to update cursor position
-      e.target._map.on('mousemove', updateCursorPosition);
+    // Show popup
+    const popup = popupRef.current;
+    if (popup) {
+        popup.style.display = 'block';
+        popup.style.left = `${e.originalEvent.pageX + 50}px`;
+        popup.style.top = `${e.originalEvent.pageY - 25}px`;
+        popup.innerHTML = `<strong>${marker.Name_Short}</strong>`;
+    }
 
-      // Show popup
-      const popup = popupRef.current;
-      if (popup) {
-          popup.style.display = 'block';
-          popup.style.left = `${e.originalEvent.pageX + 50}px`;
-          popup.style.top = `${e.originalEvent.pageY - 25}px`;
-          popup.innerHTML = `<strong>${marker.Name_Short}</strong>`;
-      }
   };
 
   // Marker is unhovered
   const onMarkerMouseOut = () => {
-      setHoveredFeature(null);
-
-      // Reset cursor
-      const cursor = cursorRef.current;
-      if (cursor) {
-          cursor.style.width = '40px';
-          cursor.style.height = '40px';
-          cursor.classList.remove('active', 'expanded');
-      }
-
-      // Hide popup
-      const popup = popupRef.current;
-      if (popup) {
-          popup.style.display = 'none';
-      }
+    setHoveredFeature(null);
+    // Reset cursor
+    const cursor = cursorRef.current;
+    if (cursor) {
+        cursor.style.width = '40px';
+        cursor.style.height = '40px';
+        cursor.classList.remove('active', 'expanded');
+    }
+    // Hide popup
+    const popup = popupRef.current;
+    if (popup) {
+        popup.style.display = 'none';
+    }
   };
 
-   //// Marker is clicked ////
-   const onMarkerClick = (e, marker) => {
-    console.log(`Clicked on ${marker.Name_Short}`);
+  //// Marker is clicked ////
+  const onMarkerClick = (e, marker) => {
+    // console.log(`Clicked on ${marker.Name_Short}`);
     setSidebarContent({
       name_short: marker.Name_Short,
       name: marker.Name,
@@ -562,19 +624,50 @@ useEffect(() => {
       other_info: `${marker["Other Info"]}`
     });
 
+    setIsCollapsed(false); // Uncollapse sidebar when a marker is clicked
+
     // Reset the previous marker's style
     resetMarkerStyle(activeMarker);
 
     // Highlight the clicked marker
     const clickedMarker = e.target;
-    clickedMarker.setRadius(10); // Increase the radius to highlight
+    clickedMarker.setRadius(20); // Increase the radius to highlight
     clickedMarker.setStyle({
-      color: '', // Highlight color
-      // fillColor: 'pink',
-      // fillOpacity: 0.5,
+      // color: 'cyan', // Marker border color
+      // fillColor: 'cyan', // Marker fill color
+      fillOpacity: 0.7,
+      weight: 5, // Border weight
+      opacity: 1,
     });
+      
+    // Create pulsing effect using setInterval
+    let radius = 20;        // Initial radius
+    let growing = true;     // Whether the radius is growing or shrinking
+
+    const pulseInterval = setInterval(() => {
+      if (growing) {
+        radius += 1;         // Increase radius
+        if (radius > 20) growing = false;  // Max size
+      } else {
+        radius -= 1;         // Decrease radius
+        if (radius < 10) growing = true;   // Min size
+      }
+
+      // Update the marker's style with the new radius
+      clickedMarker.setStyle({
+        radius: radius
+      });
+
+    }, 100); // Update every 100ms
+
+    // Optionally, clear the interval when the marker is removed or no longer needed
+    clickedMarker.on('remove', () => {
+      clearInterval(pulseInterval);
+    });
+
     // Update the active marker reference
     setActiveMarker(clickedMarker);
+    
     // Reset all line styles
     if (ancestryLinesLayer) {
       ancestryLinesLayer.eachLayer((layer) => {
@@ -584,7 +677,7 @@ useEffect(() => {
       // Highlight the corresponding line
       ancestryLinesLayer.eachLayer((layer) => {
         if (layer.feature.properties.ancestor_id === marker.ancestor_id) {
-          console.log("i was clicked and i am active")
+          // console.log("i was clicked and i am active")
           layer.setStyle({
             color: 'red',
             weight: 3,
@@ -597,7 +690,7 @@ useEffect(() => {
   
   //// Map is clicked (not marker) ////
   const onMapClick = (e) => {
-    console.log("Map clicked", e)
+    // console.log("Map clicked", e)
     // Reset the currently active marker when the map is clicked
     resetMarkerStyle(activeMarker);
     setActiveMarker(null);
@@ -614,7 +707,7 @@ useEffect(() => {
   };
 
   /////////////////////// Style the GeoJSON Lines ///////////////////////////////
-  // style function for map layer
+  // Style function for map layer
   const styleFunctionMap = () => ({
     fillColor: '#EBBB87FF', // Light brown color for fill
     color: '#6E57386C', // Dark brown color for borders
@@ -622,20 +715,20 @@ useEffect(() => {
     fillOpacity: 0.3,
   });
 
-    // Style function for the GeoJSON lines
-const styleFunctionLine = (feature) => {
+  // Style function for the GeoJSON lines
+  const styleFunctionLine = (feature) => {
   const isSelected = selectedNames.includes(feature.properties.Name);
   return {
     color: isSelected ? '#FF0000' : '#909090', // Highlight with red if selected
     weight: isSelected ? 3 : 1, // Make the highlighted line thicker
     fillOpacity: 0.1,
+    };
   };
-};
 
   /////////////////////// Custom Marker Cluster //////////////////////////////////////////////////////////////////////////
   const createClusterIcon = (languages, dynamicColorMapping) => {
     if (!dynamicColorMapping || Object.keys(dynamicColorMapping).length === 0) {
-      console.warn('dynamicColorMapping is empty');
+      // console.warn('dynamicColorMapping is empty');
       return null;
     }
   
@@ -645,7 +738,7 @@ const styleFunctionLine = (feature) => {
       return acc;
     }, {});
   
-    // Create the canvas and set its size to 30x20 (width x height)
+    // Create the canvas and set its size
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     const width = 30;
@@ -653,24 +746,25 @@ const styleFunctionLine = (feature) => {
     const padding = 2;
     const total = languages.length;
   
+    // Define new widths for count and color sections
+    const countWidth = (2 / 3) * width; // 2/3 of total width
+    const colorWidth = (1 / 3) * width; // 1/3 of total width
+  
     // Set canvas size
     canvas.width = width;
     canvas.height = height;
   
-    // Divide the canvas into two squares of equal width (15px each)
-    const squareWidth = width / 2;
+    // Draw the left section with the total count (2/3 width)
+    context.fillStyle = 'white'; // Background color for count section
+    context.fillRect(0, 0, countWidth, height);
   
-    // Draw the left square with the total count
-    context.fillStyle = 'white'; // Background color of the left square
-    context.fillRect(0, 0, squareWidth, height);
-  
-    context.fillStyle = 'black'; // Text color for count
+    context.fillStyle = 'black'; // Text color
     context.font = 'bold 12px Arial';
     const totalText = `${total}`;
     const textWidth = context.measureText(totalText).width;
-    context.fillText(totalText, (squareWidth - textWidth) / 2, height / 2 + 5);
+    context.fillText(totalText, (countWidth - textWidth) / 2, height / 2 + 5);
   
-    // Draw the right square with the color mapping
+    // Draw the right section (1/3 width) with the color mapping
     let currentY = 0;
     const entries = Object.entries(counts).map(([lang, count]) => {
       const color = dynamicColorMapping[lang] || '#808080'; // Default to gray if not found
@@ -682,9 +776,9 @@ const styleFunctionLine = (feature) => {
       };
     });
   
-    entries.forEach(({ color, height }, index) => {
+    entries.forEach(({ color, height }) => {
       context.fillStyle = color;
-      context.fillRect(squareWidth, currentY, squareWidth, height); // Draw the colored square
+      context.fillRect(countWidth, currentY, colorWidth, height); // Draw the colored square
       currentY += height; // Update the currentY for the next color block
     });
   
@@ -696,9 +790,32 @@ const styleFunctionLine = (feature) => {
     });
   };
   
+  
+  // Only render MarkerClusterGroup when dynamicColorMapping is available
+  // if (!dynamicColorMapping || Object.keys(dynamicColorMapping).length === 0) {
+  //   return <div>Loading...</div>;
+  // }
+
   // Only render MarkerClusterGroup when dynamicColorMapping is available
   if (!dynamicColorMapping || Object.keys(dynamicColorMapping).length === 0) {
-    return <div>Loading...</div>;
+    return (
+      <div 
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",  // Full screen height
+        width: "100vw",   // Full screen width
+        position: "fixed",
+        top: 0,
+        left: 0
+      }}
+    >
+        <LoadingBar /> {/* Render loading bar */}
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   const handleClusterClick = (cluster) => {
@@ -728,7 +845,6 @@ const styleFunctionLine = (feature) => {
     }
   };
   
-
   const handleFilterMarkers = (filterCriteria) => {
     // Apply your filter logic here
     const filtered = markerData.filter(marker => {
@@ -736,10 +852,8 @@ const styleFunctionLine = (feature) => {
       return marker.birthDecade === selectedDecade;
     });
     setUpdatedFilteredMarkers(filtered);
-    console.log("Filtered Markers:", filtered); // Log the filtered markers
+    // console.log("Filtered Markers:", filtered); // Log the filtered markers
   };
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
  ////////////////////////////////////////// Return these upon some action ////////////////////////////////////////////
 
@@ -760,24 +874,26 @@ const styleFunctionLine = (feature) => {
           onBasemapChange={handleBasemapChange}
           birthDecades = {selectedBirthDecades}
           onDecadeChange = {handleDecadeChange}
+          onCollapse = {handleCollapse}
         />
 
       {/* Map Container including Basemap, Data Layers, Layers Control, Custom Cursor, Popup, Marker Cluster */}
       <MapContainer 
-        center={[51.505, -0.09]} 
-        zoom={3} 
+        // center={[51.505, -0.09]} 
+        center={mapCenter} 
+        zoom={2} 
         maxZoom={14} 
-        minZoom={3} 
+        minZoom={2} 
         zoomControl={false} 
-        style={{ height: '100vh' }} // Ensure height is set for the container
-        // whenCreated={(map) => {
-        //   mapRef.current = map;
-        // }}
-        onClick={(e) => console.log("Map clicked", e)}
-
-        // onClick={onMapClick} // Detect clicks outside markers
+        style={{ height: '100vh', width: '100vw' }} // Ensure full viewport coverage
+        whenCreated={handleMapCreated} // Called when the map is created
         onZoom={handleZoomOrPan}
         onMoveEnd={handleZoomOrPan}
+        maxBounds={[
+          [-65, -180], // Southwest corner
+          [74, 180],   // Northeast corner
+        ]}
+        maxBoundsViscosity={1.0} // Prevents dragging beyond bounds
         >
 
         {/* Basemap Layer */}
@@ -842,34 +958,34 @@ const styleFunctionLine = (feature) => {
           styleFunction={styleFunctionMap}
         />
 
-  {/* Migration Lines with gradient from red to green */}
-  {isMigrationLinesVisible && filteredLines && (
-      <GeoJSON
-        data={{
-          type: "FeatureCollection",
-          features: filteredLines.map((line) => ({
-            type: "Feature",
-            geometry: line.greatCircleLine, // GeoJSON geometry
-            properties: line, // You can pass more properties if needed
-          })),
-        }}
-        style={(feature) => {
-          const line = feature.geometry.coordinates;
-          const coloredLine = applyGradientToLine(line); // Get gradient colors
-          
-          // You can return the first color or customize further
-          return {
-            color: coloredLine.length > 0 ? coloredLine[0].color : 'blue',  // Starting color of the line
-            weight: 2,
-            opacity: 0.8,
-          };
-        }}
-         />
-    )}
+        {/* Migration Lines with gradient from red to green */}
+        {isMigrationLinesVisible && filteredLines && (
+            <GeoJSON
+              data={{
+                type: "FeatureCollection",
+                features: filteredLines.map((line) => ({
+                  type: "Feature",
+                  geometry: line.greatCircleLine, // GeoJSON geometry
+                  properties: line, // You can pass more properties if needed
+                })),
+              }}
+              style={(feature) => {
+                const line = feature.geometry.coordinates;
+                const coloredLine = applyGradientToLine(line); // Get gradient colors
+                
+                // You can return the first color or customize further
+                return {
+                  color: coloredLine.length > 0 ? coloredLine[0].color : 'blue',  // Starting color of the line
+                  weight: 2,
+                  opacity: 0.8,
+                };
+              }}
+              />
+          )}
 
-{isMigrationLinesVisible && filteredLines.length > 0 && (
-      <GeoJSON key={geoJsonKey} data={{ type: "FeatureCollection", features: filteredLines }} />
-    )}
+        {isMigrationLinesVisible && filteredLines.length > 0 && (
+          <GeoJSON key={geoJsonKey} data={{ type: "FeatureCollection", features: filteredLines }} />
+        )}
 
         {/* Migration Lines Layer */}
         {isMigrationLinesVisible && geoJsonDataLines && (
@@ -889,67 +1005,70 @@ const styleFunctionLine = (feature) => {
         <div className="popup" ref={popupRef}></div>
 
         <MarkerClusterGroup
-  key={filteredMarkers.length} // Reset the group when the filteredMarkers array changes
-  spiderfyOnMaxZoom={true}
-  showCoverageOnHover={false}
-  chunkedLoading={true}
-  onClusterClick={handleClusterClick}
-  onLayerAdd={handleZoomOrPan}
-  iconCreateFunction={(cluster) => {
-    const languages = cluster.getAllChildMarkers().map((marker) => marker.options.lang2);
-    return createClusterIcon(languages, dynamicColorMapping);
-  }}
->
-  {/* Render filtered marker data */}
-  {filteredMarkers.map((marker, index) => {
-    // console.log("Rendering Marker:", marker); // Log each marker being rendered
-    return (
-      <CircleMarker
-        key={index}
-        center={[marker.lat, marker.lon]}
-        radius={5}
-        fillColor={dynamicColorMapping[marker.lang2] || '#808080'}
-        color={dynamicColorMapping[marker.lang2] || '#808080'}
-        fillOpacity={0.8}
-        eventHandlers={{
-          mouseover: (e) => onMarkerMouseOver(e, marker),
-          mouseout: onMarkerMouseOut,
-          click: (e) => {
-            onMarkerClick(e, marker);
-            e.originalEvent.stopPropagation();
-          },
-        }}
-        lang2={marker.lang2}
-      />
-    );
-  })}
-</MarkerClusterGroup>
+          key={filteredMarkers.length} // Reset the group when the filteredMarkers array changes
+          spiderfyOnMaxZoom={true}
+          showCoverageOnHover={false}
+          chunkedLoading={true}
+          onClusterClick={handleClusterClick}
+          onLayerAdd={handleZoomOrPan}
+          iconCreateFunction={(cluster) => {
+            const languages = cluster.getAllChildMarkers().map((marker) => marker.options.lang2);
+            return createClusterIcon(languages, dynamicColorMapping);
+          }}
+        >
+          {/* Render filtered marker data */}
+          {filteredMarkers.map((marker, index) => {
+            // console.log("Rendering Marker:", marker); // Log each marker being rendered
+            return (
+              <CircleMarker
+                key={index}
+                center={[marker.lat, marker.lon]}
+                radius={5}
+                fillColor={dynamicColorMapping[marker.lang2] || '#808080'}
+                color={dynamicColorMapping[marker.lang2] || '#808080'}
+                fillOpacity={0.8}
+                eventHandlers={{
+                  mouseover: (e) => onMarkerMouseOver(e, marker),
+                  mouseout: onMarkerMouseOut,
+                  click: (e) => {
+                    onMarkerClick(e, marker);
+                    e.originalEvent.stopPropagation();
+                  },
+                }}
+                lang2={marker.lang2}
+              />
+            );
+          })}
+        </MarkerClusterGroup>
 
-      {/* Pass uniqueBirthDecades to TimelineSlider */}
-      <TimelineSlider
-        birthDecades={uniqueBirthDecades}
-        selectedDecade={selectedDecade} // Pass selectedDecade state to TimelineSlider
-        onDecadeChange={handleDecadeChange} // Pass handleDecadeChange to handle the slider changes
-      />
+        {/* Pass uniqueBirthDecades to TimelineSlider */}
+        {/* <TimelineSlider
+          birthDecades={uniqueBirthDecades}
+          selectedDecade={selectedDecade} // Pass selectedDecade state to TimelineSlider
+          onDecadeChange={handleDecadeChange} // Pass handleDecadeChange to handle the slider changes
+          onCollapse={handleCollapse} // Pass handleCollapse to handle the collapse event
+          isMigrationLinesVisible={isMigrationLinesVisible}
+        /> */}
 
-      {/* Legend */}
-      <Legend
-        colorMapping={dynamicColorMapping}
-        selectedLanguage={selectedLanguage}
-        handleFilterChange={(e) => setSelectedLanguage(e.target.value)}
-        handleLanguageSelect={handleLanguageSelect}
-        resetLanguageFilter = {resetLanguageFilter}
-        resetLanguageSelection={resetLanguageSelection} 
+        {/* Legend */}
+        <Legend
+          colorMapping={dynamicColorMapping}
+          selectedLanguage={selectedLanguage}
+          handleFilterChange={(e) => setSelectedLanguage(e.target.value)}
+          handleLanguageSelect={handleLanguageSelect}
+          resetLanguageFilter = {resetLanguageFilter}
+          resetLanguageSelection={resetLanguageSelection} 
+        />
 
-      />
-
-<Sidebar sidebarContent={sidebarContent} />
-
-
+        {/* Sidebar */}
+        <Sidebar 
+          isCollapsed={isCollapsed} 
+          setIsCollapsed={setIsCollapsed} 
+          sidebarContent={sidebarContent} 
+          />
 
       </MapContainer>
     </div>
-    
   );
 };
 

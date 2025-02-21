@@ -1,7 +1,7 @@
 import React from "react";
 import "./MapComponent.css"; // Import the stylesheet
-import TimelineSlider from "./TimelineSlider.jsx";
-import ToggleLayerControl from "./ToggleLayerControl.jsx";
+import TimelineSlider from "./TimelineSlider.js";
+import ToggleLayerControl from "./ToggleLayerControl.js";
 
 const CustomLayersControl = ({
   onToggleBorders1880,
@@ -20,16 +20,21 @@ const CustomLayersControl = ({
     <div className="layer-controls-container">
       {/* Migration Lines Toggle Row */}
       <div className="layer-controls-row">
-        <ToggleLayerControl
-          label="Show Migration Lines"
-          isChecked={isMigrationLinesVisible}
-          onToggle={onToggleMigrationLines}
-        />
+        <h4 className="timelineTitle">Filter by Decade</h4>
       </div>
 
       {/* Timeline Slider Row */}
       <div className="layer-controls-row">
         <TimelineSlider birthDecades={birthDecades} onDecadeChange={onDecadeChange} />
+      </div>
+      <div className="layer-controls-row">
+        <h3>
+        <ToggleLayerControl
+          label="Show Migration Lines"
+          isChecked={isMigrationLinesVisible}
+          onToggle={onToggleMigrationLines}
+        />
+        </h3>
       </div>
     </div>
   );
