@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from "react";
 import './MapComponent.css'; // Import the stylesheet
 
-const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
+const TimelineSlider = ({ 
+  birthDecades, 
+  onDecadeChange, 
+  onCollapse,
+  isMigrationLinesVisible
+}) => {
+  // console.log("TimelineSlider props:", { isMigrationLinesVisible, onCollapse });
+
   const [sortedDecades, setSortedDecades] = useState([]);
   const [selectedDecade, setSelectedDecade] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isLandscapeMobile, setIsLandscapeMobile] = useState(false);
+  const [isLandscapeDesktop, setIsLandscapeDesktop] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // console.log("Updated onCollapse function:", onCollapse);
+  }, [onCollapse]);
 
   useEffect(() => {
     // Sort the birthDecades array
@@ -24,9 +37,10 @@ const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
+      setIsLandscapeMobile(window.innerWidth <= 1024 && window.matchMedia("(orientation: landscape)").matches); // Check for landscape mobile
+      setIsLandscapeDesktop(window.innerWidth > 1024 && window.matchMedia("(orientation: landscape)").matches); // Check for landscape desktop
     };
 
-    // Listen to window resize and orientation change
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleResize);
 
@@ -45,6 +59,10 @@ const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
     setSelectedDecade(decade);
     setCurrentIndex(index);
     onDecadeChange(decade); // Notify parent component
+    if (typeof onCollapse === "function") {
+      console.log("Calling onCollapse...");
+      onCollapse();
+    }
   };
 
   const handlePrevious = () => {
@@ -53,6 +71,10 @@ const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
       setCurrentIndex(newIndex);
       setSelectedDecade(sortedDecades[newIndex]);
       onDecadeChange(sortedDecades[newIndex]);
+      if (typeof onCollapse === "function") {
+        console.log("Calling onCollapse...");
+        onCollapse();
+      }
     }
   };
 
@@ -62,20 +84,26 @@ const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
       setCurrentIndex(newIndex);
       setSelectedDecade(sortedDecades[newIndex]);
       onDecadeChange(sortedDecades[newIndex]);
+      if (typeof onCollapse === "function") {
+        console.log("Calling onCollapse... ✅");
+        onCollapse();
+      } else {
+        console.error("onCollapse is NOT a function! ❌");
+      }
     }
   };
 
   return (
     <div className="timeline-slider-container">
-      {/* For mobile, use arrows */}
-      {isMobile ? (
+      {/* For mobile or landscape mobile, use arrows */}
+      {isMobile || isLandscapeMobile ? (
         <div className="timeline-arrows">
           <button
             className="arrow-button left"
             onClick={handlePrevious}
             disabled={currentIndex === 0}
           >
-            &#8592;
+            ‹
           </button>
           <span className="timeline-text">{selectedDecade}</span>
           <button
@@ -83,7 +111,7 @@ const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
             onClick={handleNext}
             disabled={currentIndex === sortedDecades.length - 1}
           >
-            &#8594;
+            ›
           </button>
         </div>
       ) : (
@@ -115,3 +143,4 @@ const TimelineSlider = ({ birthDecades, onDecadeChange }) => {
 };
 
 export default TimelineSlider;
+  
