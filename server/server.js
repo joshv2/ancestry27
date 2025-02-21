@@ -1,4 +1,7 @@
 import express from 'express';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import cors from 'cors'; // Import cors
@@ -8,10 +11,17 @@ import { dirname, resolve } from 'path'; // Import `path` module
 
 dotenv.config();
 
+var options = {
+  key: fs.readFileSync('/etc/letsencrypt/live/jewishnames.org/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/jewishnames.org/fullchain.pem')
+};
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
 const port = 5000;
 
 // Set up the S3 client
@@ -31,11 +41,18 @@ const s3 = new S3Client({
 //   allowedHeaders: ['Content-Type', 'Authorization'], // Optional, if you are using Authorization headers
 // };
 // app.use(cors(corsOptions)); // Apply CORS middleware
-app.use(cors());
+//app.use(cors());
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 
+app.use(cors())
 // Serve React static files
-app.use(express.static(resolve(__dirname, 'frontend', 'build')));
+//app.use(express.static(resolve(__dirname, 'frontend', 'build')));
 
 // API endpoint for downloading CSV
 app.get('/download-csv', async (req, res) => {
@@ -69,16 +86,17 @@ app.get('/download-csv', async (req, res) => {
 
 
 // Serve the React app for any other route
-app.get('*', (req, res) => {
-  res.sendFile(resolve(__dirname, 'frontend', 'build', 'index.html'));
-});
+//app.get('*', (req, res) => {
+//  res.sendFile(resolve(__dirname, 'frontend', 'build', 'index.html'));
+//});
 
 // Start the server
-app.listen(port, () => {
+/*app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${port}`);
-});
+});*/
 
-
+http.createServer(app).listen(5000);
+https.createServer(options, app).listen(8443);
 
 /*require("dotenv").config();
 const express = require("express");

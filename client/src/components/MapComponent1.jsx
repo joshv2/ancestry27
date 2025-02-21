@@ -237,7 +237,7 @@ const filterMarkers = (decade, language) => {
 
   ////////////////////// Load data from CSV and GeoJSON files ///////////////////////
   useEffect(() => {
-    fetch('http://localhost:5000/download-csv')
+    fetch('https://www.jewishnames.org:8443/download-csv')
     .then((response) => response.text())
       .then((data) => {
         const parsedData = d3.csvParse(data); // `d3.csvParse` converts CSV text to an array of objects
